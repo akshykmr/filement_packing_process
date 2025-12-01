@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filament Pick-and-Place Bundling System - Complete 3D Simulation</title>
+  <style>
+    :root {
+  /* Primitive Color Tokens */
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-bg-1: rgba(59, 130, 246, 0.08);
+  --color-bg-2: rgba(245, 158, 11, 0.08);
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --radius-base: 8px;
+  --radius-lg: 12px;
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --color-highlight-left: #FF6B6B;
+      --color-highlight-right: #4ECDC4;
+      --color-filament: #CD853F;
+      --color-wrapper-band: #FFD700;
+      --color-base: #505050;
+      --color-hopper: #707070;
+      --color-wrapper: #C0C0C0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: var(--font-size-base); font-family: var(--font-family-base); }
+    body { margin: 0; background: var(--color-background); color: var(--color-text); }
+    h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-16); }
+    .container3d {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      padding: var(--space-16);
+      min-height: 600px;
+    }
+    .controls-bar {
+      display: flex;
+      gap: var(--space-16);
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: var(--space-16);
+    }
+    .panel {
+      margin-top: var(--space-16);
+      background: var(--color-bg-2);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-xs);
+      padding: var(--space-16);
+      font-size: var(--font-size-lg);
+      color: var(--color-text);
+      display: flex;
+      gap: var(--space-24);
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .label {
+      background: var(--color-bg-4);
+      color: var(--color-error);
+      font-size: var(--font-size-base);
+      font-weight: 500;
+      padding: 2px 10px;
+      border-radius: 8px;
+      margin-right: 8px;
+      pointer-events: none;
+      opacity: 0.85;
+      box-shadow: var(--shadow-xs);
+      position: absolute;
+      z-index: 10;
+    }
+    .slider-label { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .cycle-counter { display: flex; align-items: center; font-weight: 600; font-size: var(--font-size-xl); }
+    .info-panel { color: var(--color-primary); font-weight: 500; }
+    .highlight {
+      box-shadow: 0 0 0 0.3rem var(--color-focus-ring);
+      transition: box-shadow 0.25s;
+    }
+    /* 3D canvas as flex child so controls are always visible */
+    #machine-canvas { width: 100%; height: 520px; display: block; border-radius: var(--radius-base); }
+    .btn {
+      padding: var(--space-8) var(--space-16);
+      border: none;
+      border-radius: var(--radius-base);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn--primary {
+      background: var(--color-primary);
+      color: var(--color-btn-primary-text);
+    }
+    .btn--primary:hover { background: var(--color-primary-hover); }
+    .btn--secondary {
+      background: var(--color-bg-2);
+      color: var(--color-text);
+    }
+    @media (max-width:700px) {
+      .container3d { min-height: 340px; }
+      #machine-canvas { height: 280px; }
+      .panel { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container container3d">
+    <h1>Filament Pick-and-Place Bundling System</h1>
+    <p style="margin-bottom: var(--space-16); color: var(--color-text-secondary);">Complete automation: TOP → CENTER → LEFT/RIGHT → TRAYS</p>
+    <div class="controls-bar">
+      <button id="playPause" class="btn btn--primary">Pause</button>
+      <label for="speed" class="slider-label">Speed: <span id="speed-value">1.0x</span></label>
+      <input type="range" min="0.5" max="2" step="0.01" id="speed" value="1" style="width:120px;">
+      <button id="resetBtn" class="btn btn--secondary">Reset</button>
+      <select id="stationSelect" class="btn btn--secondary" style="padding: var(--space-8) var(--space-12);">
+        <option value="left">Process LEFT</option>
+        <option value="right">Process RIGHT</option>
+        <option value="both">Alternate BOTH</option>
+      </select>
+      <span class="cycle-counter">📦 Bundles: <span id="cycleCount">0</span></span>
+    </div>
+    <div id="machineView" style="position: relative;">
+      <canvas id="machine-canvas"></canvas>
+    </div>
+    <div class="panel">
+      <span class="info-panel">⏱️ Time: <span id="cycleTimer">0.0s</span></span>
+      <span class="info-panel">📍 Status: <span id="cycleText">Ready to process</span></span>
+      <span class="info-panel" style="font-size: var(--font-size-base);">🎯 Station: <span id="currentStation">LEFT</span></span>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

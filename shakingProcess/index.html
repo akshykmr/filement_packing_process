@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filament Bundling System - Complete Animation</title>
+  <style>
+    :root {
+      --color-background: #0a0a0a;
+      --color-text: #ffffff;
+      --color-primary: #4ECDC4;
+      --color-secondary: #FF6B6B;
+      --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family-base);
+      background: var(--color-background);
+      color: var(--color-text);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #ui-overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 100;
+      min-width: 300px;
+      backdrop-filter: blur(10px);
+    }
+
+    #ui-overlay h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: var(--color-primary);
+    }
+
+    .status-line {
+      margin: 8px 0;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-label {
+      color: #aaa;
+    }
+
+    .status-value {
+      color: var(--color-primary);
+      font-weight: bold;
+    }
+
+    #current-phase {
+      font-size: 16px;
+      color: #FFD700;
+      margin: 15px 0;
+      padding: 10px;
+      background: rgba(255, 215, 0, 0.1);
+      border-radius: 5px;
+      border-left: 3px solid #FFD700;
+    }
+
+    #controls {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px;
+      border-radius: 10px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .control-group {
+      margin: 10px 0;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    button {
+      background: var(--color-primary);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 10px;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #45B7AA;
+      transform: translateY(-2px);
+    }
+
+    button.secondary {
+      background: var(--color-secondary);
+    }
+
+    button.secondary:hover {
+      background: #FF8E72;
+    }
+
+    input[type="range"] {
+      width: 200px;
+      accent-color: var(--color-primary);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  
+  <div id="ui-overlay">
+    <h1>🏭 Filament Bundling System</h1>
+    <div id="current-phase">⏳ Initializing...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="status-line">
+      <span class="status-label">Cycle Time:</span>
+      <span class="status-value" id="cycle-time">0.0s</span>
+    </div>
+    <div class="status-line">
+      <span class="status-label">Total Bundles:</span>
+      <span class="status-value" id="bundle-count">0</span>
+    </div>
+    <div class="status-line">
+      <span class="status-label">Left Tray:</span>
+      <span class="status-value" id="left-count">0</span>
+    </div>
+    <div class="status-line">
+      <span class="status-label">Right Tray:</span>
+      <span class="status-value" id="right-count">0</span>
+    </div>
+  </div>
+
+  <div id="controls">
+    <div class="control-group">
+      <button id="play-pause">⏸️ Pause</button>
+      <button id="reset" class="secondary">🔄 Reset</button>
+    </div>
+    <div class="control-group">
+      <label>Speed: <span id="speed-value">1.0x</span></label>
+      <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
