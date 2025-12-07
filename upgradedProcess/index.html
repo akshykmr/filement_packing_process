@@ -196,26 +196,101 @@
       outline: none;
     }
 
-    /* HUD Overlay */
+    /* HUD Overlay - Now in Sidebar */
     .hud {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.3);
       padding: 15px;
       border-radius: 8px;
       pointer-events: none;
-      z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 15px;
+    }
+
+    .hud-section {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .hud-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .hud-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .hud-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+      margin: 5px 0;
+    }
+
+    .hud-subtitle {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 3px;
+    }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .analytics-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .analytics-card.left {
+      border-left: 3px solid var(--color-accent-2);
+    }
+
+    .analytics-card.right {
+      border-left: 3px solid var(--color-accent);
+    }
+
+    .analytics-label {
+      font-size: 0.7rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    .analytics-value {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .analytics-unit {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-left: 3px;
     }
 
     .status-badge {
       display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      background: #444;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: rgba(68, 68, 68, 0.8);
       font-size: 0.8rem;
       font-weight: bold;
-      margin-top: 5px;
+      margin-top: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .highlight-text { color: var(--color-accent); }
@@ -239,6 +314,51 @@
   <div class="container">
     <!-- Sidebar Controls -->
     <div class="sidebar">
+      <!-- Analytics Panel at Top -->
+      <div class="hud">
+        <div class="hud-section">
+          <div class="hud-title">Cycle Status</div>
+          <div class="hud-value">Time: <span id="cycleTimer" class="highlight-text">0.0s</span></div>
+          <div class="status-badge" id="cycleText">Initializing...</div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title">Production Summary</div>
+          <div class="hud-value">📦 <span id="cycleCount">0</span> <span class="hud-subtitle">Total Items</span></div>
+          
+          <div class="analytics-grid">
+            <div class="analytics-card left">
+              <div class="analytics-label">Left Arm</div>
+              <div class="analytics-value" style="color: var(--color-accent-2);">
+                <span id="leftArmWeight">0.00</span><span class="analytics-unit">g</span>
+              </div>
+              <div class="hud-subtitle" style="font-size: 0.7rem; margin-top: 3px;">
+                <span id="leftArmCount">0</span> items
+              </div>
+            </div>
+            
+            <div class="analytics-card right">
+              <div class="analytics-label">Right Arm</div>
+              <div class="analytics-value" style="color: var(--color-accent);">
+                <span id="rightArmWeight">0.00</span><span class="analytics-unit">g</span>
+              </div>
+              <div class="hud-subtitle" style="font-size: 0.7rem; margin-top: 3px;">
+                <span id="rightArmCount">0</span> items
+              </div>
+            </div>
+          </div>
+          
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="hud-subtitle" style="font-size: 0.75rem;">Total Weight:</span>
+              <span class="hud-value" style="font-size: 1.1rem; margin: 0;">
+                <span id="totalWeight">0.00</span><span class="analytics-unit">g</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div>
         <h1>System Control</h1>
         <p style="font-size: 0.8rem; color: #888;">Dual-Arm Packaging & AI Analysis</p>
@@ -276,11 +396,11 @@
       <div class="control-group">
         <h2>Material Specs</h2>
         <div style="margin-bottom: 10px;">
-          <label style="color: var(--color-accent-2);">Left Arm Height (cm)</label>
+          <label style="color: var(--color-accent-2);">Left Arm Height (mm)</label>
           <input type="number" id="leftHeightInput" value="80" min="40" max="120" step="1">
         </div>
         <div>
-          <label style="color: var(--color-accent);">Right Arm Height (cm)</label>
+          <label style="color: var(--color-accent);">Right Arm Height (mm)</label>
           <input type="number" id="rightHeightInput" value="60" min="40" max="120" step="1">
         </div>
         <button id="updateSizeBtn" style="width: 100%; margin-top: 10px; background: #555; color: white;">Apply New Sizes</button>
@@ -296,13 +416,6 @@
 
     <!-- 3D Viewport -->
     <div class="main-view">
-      <div class="hud">
-        <div style="font-size: 1.5rem; font-weight: bold;">Cycle Time: <span id="cycleTimer" class="highlight-text">0.0s</span></div>
-        <div class="status-badge" id="cycleText">Initializing...</div>
-        <div style="margin-top: 10px;">
-          📦 Total Packed: <span id="cycleCount">0</span>
-        </div>
-      </div>
       <canvas id="machine-canvas"></canvas>
     </div>
   </div>
@@ -410,7 +523,12 @@
       rightHeight: document.getElementById('rightHeightInput'),
       aiToggle: document.getElementById('aiBrandingToggle'),
       aiOutput: document.getElementById('aiOutput'),
-      analyzeBtn: document.getElementById('analyzeBtn')
+      analyzeBtn: document.getElementById('analyzeBtn'),
+      leftArmWeight: document.getElementById('leftArmWeight'),
+      rightArmWeight: document.getElementById('rightArmWeight'),
+      leftArmCount: document.getElementById('leftArmCount'),
+      rightArmCount: document.getElementById('rightArmCount'),
+      totalWeight: document.getElementById('totalWeight')
     };
 
     // INITIALIZATION
@@ -458,6 +576,9 @@
 
       onResize();
       setTimeout(onResize, 100);
+      
+      // Initialize analytics
+      updateAnalytics();
       
       animate();
     }
@@ -675,20 +796,38 @@
     }
 
     function logWeight(side, weight) {
-      loggedWeights.push({ side, weight, timestamp: Date.now() });
+      loggedWeights.push({ side, weight: parseFloat(weight), timestamp: Date.now() });
       
       const div = document.createElement('div');
       div.className = `log-entry ${side}`;
       div.innerHTML = `<span>${side.toUpperCase()}: ${weight}g</span>`;
       ui.log.prepend(div);
       
-      if(ui.aiToggle.checked) {
+      if(ui.aiToggle && ui.aiToggle.checked) {
         const span = document.createElement('span');
         span.className = 'ai-tag';
         span.innerText = '✨ thinking...';
         div.appendChild(span);
         getBrandName(weight, side);
       }
+      
+      // Update analytics
+      updateAnalytics();
+    }
+
+    function updateAnalytics() {
+      const leftWeights = loggedWeights.filter(w => w.side === 'left').map(w => w.weight);
+      const rightWeights = loggedWeights.filter(w => w.side === 'right').map(w => w.weight);
+      
+      const leftTotal = leftWeights.reduce((sum, w) => sum + w, 0);
+      const rightTotal = rightWeights.reduce((sum, w) => sum + w, 0);
+      const total = leftTotal + rightTotal;
+      
+      ui.leftArmWeight.textContent = leftTotal.toFixed(2);
+      ui.rightArmWeight.textContent = rightTotal.toFixed(2);
+      ui.totalWeight.textContent = total.toFixed(2);
+      ui.leftArmCount.textContent = leftWeights.length;
+      ui.rightArmCount.textContent = rightWeights.length;
     }
 
     function animate() {
@@ -940,6 +1079,9 @@
       machine.leftObject = null; machine.rightObject = null;
       rotateArm(machine.leftArmGroup, 0); 
       rotateArm(machine.rightArmGroup, 0);
+      
+      // Reset analytics
+      updateAnalytics();
     }
     function onResize() {
       const canvas = document.getElementById('machine-canvas');
